@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import Videocard from './Videocard';
-import { addCategoryApi, deleteCategoryApi, getAllCategoryApi } from '../services/allApi';
+import { addCategoryApi, deleteCategoryApi, getAllCategoryApi, updateCategoryApi } from '../services/allApi';
 import { toast, ToastContainer } from 'react-toastify';
 
 function Category() {
@@ -16,6 +16,7 @@ function Category() {
   const [allCategory, setAllCategory] = useState([])
   const [addCategoryStatus, setAddCategoryStatus] = useState({})
   const [deleteCategoryStatus, setDeleteCategoryStatus] = useState({})
+  const [updateStatus, setUpdateStatus] = useState({})
 
   const handleClose = () => {
     setShow(false)
@@ -77,24 +78,30 @@ function Category() {
     e.preventDefault()
   }
 
-  const videoDrop=(e,categoryDetails)=>{
-    console.log(e)
-    console.log(categoryDetails)
-   const videoDetails=JSON.parse(e.dataTransfer.getData("videoDetails")) 
-   console.log(videoDetails)
+  const videoDrop = async (e, categoryDetails) => {
+    //console.log(e)
+    //console.log(categoryDetails)
+    const videoDetails = JSON.parse(e.dataTransfer.getData("videoDetails"))
+    //console.log(videoDetails)
 
-   if(categoryDetails.allvideos.find((item)=>item.id==videoDetails.id)){
-    alert("Video already in this category")
-   }
-   else{
-    categoryDetails.allvideos.push(videoDetails)
-   }
+    if (categoryDetails.allvideos.find((item) => item.id == videoDetails.id)) {
+      alert("Video already in this category")
+    }
+    else {
+      categoryDetails.allvideos.push(videoDetails)
+      console.log(categoryDetails)
+      const result = await updateCategoryApi(categoryDetails.id, categoryDetails)
+      console.log(result)
+      if (result.status >= 200 && result < 300) {
+        setUpdateStatus(result.data)
+      }
+    }
 
   }
 
   useEffect(() => {
     getAllCategory()
-  }, [addCategoryStatus, deleteCategoryStatus])
+  }, [addCategoryStatus, deleteCategoryStatus, updateStatus])
 
 
   return (
@@ -137,15 +144,20 @@ function Category() {
       {
         allCategory?.length > 0 ?
           allCategory?.map((item, index) => (
-            <Form className='border rounded p-2 mt-3' key={index} droppable="true" onDragOver={(e) => videoOver(e)} onDrop={(e)=>videoDrop(e,item)}>
+            <Form className='border rounded p-2 mt-3' key={index} droppable="true" onDragOver={(e) => videoOver(e)} onDrop={(e) => videoDrop(e, item)}>
               <div className="container d-flex justify-content-between mt-2">
                 <p>{item.category}</p>
                 <button onClick={() => deleteCategory(item?.id)} className='btn btn-danger'><FontAwesomeIcon icon={faTrashCan} /></button>
 
               </div>
-              <div>
-                 {/* <Videocard />  */}
-              </div>
+
+              {item?.allvideos?.map((video,index) => (
+                <div key={index}>
+                  <Videocard video={video} isPresent={true} />
+                </div>
+              ))
+              }
+
             </Form>)) :
           <p className='text-danger mt-4 text-center'>No Category yet Added</p>
       }

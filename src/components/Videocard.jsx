@@ -10,7 +10,7 @@ import { deleteVideoApi } from '../services/allApi';
 
 import { addVideoHistoryApi } from '../services/allApi';
 
-function Videocard({ video, setvideoDeleted }) {
+function Videocard({ video, setvideoDeleted,isPresent }) {
 
   //console.log(video) object destructuring 
   const [show, setShow] = useState(false);
@@ -56,10 +56,10 @@ function Videocard({ video, setvideoDeleted }) {
   return (
     <>
       <Card style={{ width: '100%' }} className='mt-3' draggable onDragStart={(e) => videoDrag(e, video)}>
-        <Card.Img variant="top" src={video?.image} style={{ height: '300px' }} onClick={handleShow} />
+        {!isPresent &&<Card.Img variant="top" src={video?.image} style={{ height: '300px' }} onClick={handleShow} /> }
         <Card.Body className='d-flex justify-content-between align-items-center'>
           <Card.Text className='mt-3'>{video?.caption}</Card.Text>
-          <Button variant="danger" onClick={() => deleteVideo(video?.id)}><FontAwesomeIcon icon={faTrash} /></Button>
+          {!isPresent && <Button variant="danger" onClick={() => deleteVideo(video?.id)}><FontAwesomeIcon icon={faTrash} /></Button>}
 
         </Card.Body>
       </Card>
