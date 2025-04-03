@@ -66,12 +66,12 @@ function Category() {
 
   const deleteCategory = async (id) => {
     const response = await deleteCategoryApi(id)
-    console.log(response)
+    console.log(response.data)
     if (response.status >= 200 && response.status < 300) {
       setDeleteCategoryStatus(response.data)
     }
   }
-  console.log(deleteCategoryStatus)
+  //console.log(deleteCategoryStatus)
 
   const videoOver = (e) => {
     //prevent the reload-to prevent data lose
@@ -92,12 +92,13 @@ function Category() {
       console.log(categoryDetails)
       const result = await updateCategoryApi(categoryDetails.id, categoryDetails)
       console.log(result)
-      if (result.status >= 200 && result < 300) {
+      if (result.status >= 200 && result.status < 300) {
         setUpdateStatus(result.data)
       }
     }
 
   }
+  console.log(updateStatus)
 
   useEffect(() => {
     getAllCategory()
